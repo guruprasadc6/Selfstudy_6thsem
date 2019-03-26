@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from graph import views
+from django.conf.urls import url
+from django.conf.urls import include
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',views.homeView ),
-    path('get_stock/', views.send_company_stocks_price),
-]
+    url(r'^stock/', include('graph.urls')),
+    url(r'^admin/', admin.site.urls),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

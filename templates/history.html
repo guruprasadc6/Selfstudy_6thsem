@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+
+<form method="post" action="/stock/history/">
+{% csrf_token %}
+    <label style="font-size: 20px;">Select a Company
+    <select name="company">
+        <option value="MSFT">Microsoft</option>
+        <option value="AMZN">Amazon</option>
+        <option value="GOOG">Google</option>
+    </select>
+    </label>
+    <input style="padding: 8px;font-style: verdana;font-size: 20px;background-color: #FA8A0B;" type="submit" value="Get Stock Data" />
+</form>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+
+<div id="container" style="height: 500px; min-width: 310px"></div>
+<script type="text/javascript">
+
+// Create the chart
+Highcharts.stockChart('container', {
+  
+  time: {
+    useUTC: false
+  },
+
+  rangeSelector: {
+    buttons: [{
+      count: 7,
+      type: 'day',
+      text: '1W'
+    }, {
+      count: 1,
+      type: 'month',
+      text: '1M'
+    }, {
+      count: 6,
+      type: 'month',
+      text: '6M'
+    }, {
+      count: 1,
+      type: 'year',
+      text: '1Y'
+    }, {
+      count: 2,
+      type: 'year',
+      text: '2Y'
+    }, {
+      type: 'all',
+      text: 'All'
+    }],
+    inputEnabled: true,
+    selected: 1
+  },
+
+  title: {
+    text: '{{ company }}' + ' Historical Stock prices'
+  },
+
+  exporting: {
+    enabled: true
+  },
+
+  series: [{
+    name: "{{ symbol }}",
+    data: {{ prices }},
+    tooltip: {
+                valueDecimals: 2
+            }
+  }]
+});
+
+</script>
+{% endblock %}

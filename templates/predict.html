@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+    Predict
+{% endblock %}
+
+{% block main %}
+
+<form method="post" action="">
+{% csrf_token %}
+    <label style="font-size: 20px;">Select a Company
+    <select name="company">
+        <option value="MSFT">Microsoft</option>
+        <option value="AMZN">Amazon</option>
+        <option value="GOOG">Google</option>
+    </select>
+    </label>
+    <input style="padding: 8px;font-style: verdana;font-size: 20px;background-color: #FA8A0B;" type="submit" value="Get Predicted Price" />
+</form>
+
+<h3 id="head1" style="font-family: 'Times New Roman', Times, serif;" align="center"></h3>
+<h3 id="head2" style="font-family: 'Times New Roman', Times, serif;" align="center"></h3>
+<br />
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+
+<div id="container" style="height: 365px; min-width: 310px"></div>
+<script type="text/javascript">
+
+// Create the chart
+Highcharts.stockChart('container', {
+  time: {
+    useUTC: false
+  },
+
+  rangeSelector: {
+    buttons: [{
+      count: 7,
+      type: 'day',
+      text: '1W'
+    }, {
+      count: 1,
+      type: 'month',
+      text: '1M'
+    }, {
+      count: 6,
+      type: 'month',
+      text: '6M'
+    }, {
+      count: 1,
+      type: 'year',
+      text: '1Y'
+    }, {
+      count: 2,
+      type: 'year',
+      text: '2Y'
+    }, {
+      type: 'all',
+      text: 'All'
+    }],
+    inputEnabled: true,
+    selected: 1
+  },
+
+  title: {
+    text: 'Actual vs Predicted rates'
+  },
+
+  exporting: {
+    enabled: true
+  },
+
+  series: [{
+    name: 'actual price',
+    data: {{ actual }},
+    tooltip: {
+                valueDecimals: 2
+            }
+  }, {
+        name:'predicted price',
+        data: {{ predict }},
+        color: 'red',
+        tooltip: {
+                valueDecimals: 2
+            }
+     }
+  ]
+});
+
+var x = "Today's {{ company }} rate: <a style='background-color: #FFC300;font-size: 35px;color: #000000'>${{ todayPrice }}</a>";
+var y = "Tomorrow's predicted rate: <a style='background-color: #FFC300;font-size: 35px;color: #000000'>${{ predictPrice }}</a> ({{ sign }}{{ diff }}) {% if arrowCode == '&#8595;' %}&#8595; {% else %}&#8593; {% endif %}";
+document.getElementById("head1").innerHTML = x;
+document.getElementById("head2").innerHTML = y;
+
+</script>
+
+{% endblock %}
